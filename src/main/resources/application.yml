@@ -1,12 +1,31 @@
 spring:
-    r2dbc:
-        url: r2dbc:postgresql://localhost:5432/usr
-        username: postgres
-        password: 123
-
-server.port: 8081
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/usr
+    username: postgres
+    password: 123
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/usr
+    username: postgres
+    password: 123
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        show_sql: false
+        temp:
+          use_jdbc_metadata_defaults: false
+  liquibase:
+    change-log: db.changelog/db.changelog.yml
+#  liquibase:
+#    url: jdbc:postgresql://localhost:5432/usr
+#    user: postgres
+#    password: 123
 
 logging:
-    level:
-        org.springframework.data:
-            r2dbc: DEBUG
+  level:
+    org.springframework.data:
+      r2dbc: DEBUG
+
+server:
+  port: 8888

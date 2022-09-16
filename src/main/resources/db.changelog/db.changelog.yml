@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - changeSet:
+    id: 1
+    author: author
+    changes:
+      - createTable:
+        tableName: usr
+        columns:
+          - column:
+              name: id
+              type: long
+              autoIncrement: true
+              constraints:
+                primaryKey: true
+                nullable: false
+          - column:
+              name: username
+              type: varchar(50)
+          - column:
+              name: password
+              type: varchar(50)
+          - column:
+              name: role_id
+              type: long

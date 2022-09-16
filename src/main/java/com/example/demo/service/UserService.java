@@ -1,22 +1,18 @@
 package com.example.demo.service;
 
+import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+@AllArgsConstructor
 @Service
-public class UserService implements ReactiveUserDetailsService {
+public class UserService {
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public Mono<UserDetails> findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .cast(UserDetails.class);
+    public Mono<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }
+
