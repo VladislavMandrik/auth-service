@@ -8,7 +8,7 @@ databaseChangeLog:
         columns:
           - column:
               name: id
-              type: long
+              type: SERIAL
               autoIncrement: true
               constraints:
                 primaryKey: true
@@ -21,4 +21,63 @@ databaseChangeLog:
               type: varchar(50)
           - column:
               name: role_id
-              type: long
+              type: varchar(50)
+#
+#  - changeSet:
+#      id: 2
+#      author: author
+#      comment: "Create users"
+#      changes:
+#        - insert:
+#            tableName: usr
+#            columns:
+#              - column:
+#                  name: username
+#                  value: "user1"
+#              - column:
+#                  name: password
+#                  value: "123"
+#              - column:
+#                  name: role_id
+#                  value: 1
+#        - insert:
+#            tableName: usr
+#            columns:
+#              - column:
+#                  name: username
+#                  value: "user2"
+#              - column:
+#                  name: password
+#                  value: "123"
+#              - column:
+#                  name: role_id
+#                  value: 2
+#      rollback:
+#        - delete:
+#            tableName: usr
+#            where: username in ('user1', 'user2')
+
+#databaseChangeLog:
+#  - changeSet:
+#    id: 1
+#    author: author
+#    changes:
+#      - createTable:
+#        tableName: usr
+#        columns:
+#          - column:
+#              name: id
+#              type: long
+#              autoIncrement: true
+#              constraints:
+#                primaryKey: true
+#                nullable: false
+#          - column:
+#              name: username
+#              type: varchar(50)
+#          - column:
+#              name: password
+#              type: varchar(50)
+#          - column:
+#              name: role_id
+#              type: long

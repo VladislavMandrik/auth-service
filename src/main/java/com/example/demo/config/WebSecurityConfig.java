@@ -23,7 +23,7 @@ public class WebSecurityConfig {
                 .formLogin().and()
                 .httpBasic().disable()
                 .authorizeExchange()
-                .pathMatchers("/", "/login", "/hello", "/favicon.ico").permitAll()
+                .pathMatchers("/users", "/registration", "/hello", "/favicon.ico").permitAll()
                 .anyExchange().authenticated()
                 .and()
                 .build();
