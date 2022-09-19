@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.Response;
 import com.example.demo.exception.UserAlreadyExistsException;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,8 +39,8 @@ public class UserService {
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public String handleException(UserAlreadyExistsException e) {
-        return e.getMessage();
+    public Response handleException(UserAlreadyExistsException e) {
+        return new Response(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 
