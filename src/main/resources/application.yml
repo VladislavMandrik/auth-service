@@ -16,12 +16,15 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
   liquibase:
-    change-log: db/changelog/db.changelog.xml
+    url: jdbc:postgresql://localhost:5432/usr
+    password: 123
+    user: postgres
+    change-log: classpath:/db.changelog/db.changelog.xml
 
 logging:
   level:
     org.springframework.data:
       r2dbc: DEBUG
 
-#server:
-#  port: 8081
+server:
+  port: 8888

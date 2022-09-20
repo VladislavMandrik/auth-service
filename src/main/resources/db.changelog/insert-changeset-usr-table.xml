@@ -11,7 +11,17 @@
         <insert tableName="usr">
             <column name="username" value="vm"/>
             <column name="password" value="123"/>
-            <column name="role_id" value="user"/>
+            <column name="role" value="user"/>
+        </insert>
+    </changeSet>
+    <changeSet id="3" author="author" >
+        <preConditions  onFail="WARN">
+            <sqlCheck  expectedResult="2">select count(*) from   usr</sqlCheck>
+        </preConditions>
+        <insert tableName="usr">
+            <column name="username" value="jr"/>
+            <column name="password" value="123"/>
+            <column name="role" value="admin"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

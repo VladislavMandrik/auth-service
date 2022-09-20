@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.User;
+import com.example.demo.model.UserDTO;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +24,12 @@ public class Controller {
     }
 
     @GetMapping("/users")
-    public Flux<User> getAll() {
+    public Flux<UserDTO> getAll() {
         return userService.getAll();
     }
 
     @PostMapping("/registration")
-    public Mono createUser(@RequestBody User user) {
-        return userService.addUser(user);
+    public Mono<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+        return userService.addUser(userDTO);
     }
 }
