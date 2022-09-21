@@ -3,14 +3,13 @@ package com.example.demo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 @Data
 @Table("usr")
@@ -19,7 +18,6 @@ public class User implements UserDetails {
     @Id
     private Long id;
     private String username;
-    @JsonIgnore
     private String password;
     private String role;
 

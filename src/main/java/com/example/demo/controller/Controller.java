@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -25,7 +27,8 @@ public class Controller {
 
     @GetMapping("/users")
     public Flux<UserDTO> getAll() {
-        return userService.getAll();
+        return userService.getAll()
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping("/registration")

@@ -6,20 +6,18 @@ import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserDTO;
 import com.example.demo.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Component
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public Mono<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -27,34 +25,25 @@ public class UserService {
 
     public Flux<UserDTO> getAll() {
         return userRepository.findAll()
-                .map(UserMapper.INSTANCE::toDTO)
-                .switchIfEmpty(Flux.empty());
+                .map(userMapper::toDTO);
+//                .switchIfEmpty(Flux.empty());
     }
 
     public Mono<UserDTO> addUser(UserDTO userDTO) {
 //        user.setRoleId(USER_ROLE_ID);
 //        user.setPassword(encoder.encode(user.getPassword()));
+        User user = userMapper.fromDTO(userDTO);
+        return userRepository.save(user)
+                .map(userMapper::toDTO);
 
-        return userRepository.findByUsername(userDTO.getUsername())
-                .map(a -> userDTO)
-                .map(UserMapper.INSTANCE::fromDTO)
-                .flatMap(userRepository::save)
-                .map(UserMapper.INSTANCE::toDTO)
-                .switchIfEmpty(Mono.error(new UserAlreadyExistsException(userDTO.getUsername())));
-
-//                userRepository.findByUsername(user.getUsername()).flatMap((e) ->
-//                Mono.error(new UserAlreadyExistsException(user.getUsername()))
-//        ).switchIfEmpty(
-//                Mono.defer(() -> userRepository.save(user))
-//        );
-
-//        return isUserExist(userDTO.getUsername())
-//                .filter(userExist -> !userExist)
-//                .switchIfEmpty(Mono.error(new UserAlreadyExistsException(userDTO.getUsername())))
-//                .map(aBoolean -> userDto)
-//                .map(UserMapper.INSTANCE::fromDTO)
-//                .flatMap(userRepository::save)
-//                .map(UserMapper.INSTANCE::toDTO);
+//                userRepository.existsByUsername(userDTO.getUsername())
+//                        .filter(userExist -> !userExist)
+//                        .switchIfEmpty(Mono.error(UserAlreadyExistException::new))
+//                        .map(aBoolean -> userDto)
+//                        userRepository.map(UserMapper.INSTANCE::fromDTO)
+//                        .doOnNext(user -> user.setPassword(passwordEncoder.encode(user.getPassword())))
+//                        .flatMap(userRepository::save)
+//                        .map(UserMapper.INSTANCE::toDTO);
     }
 
 
@@ -63,10 +52,10 @@ public class UserService {
         return new Response(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private Mono<Boolean> isUserExist(String username) {
-        return userRepository.findByUsername(username)
-                .map(user -> true)
-                .switchIfEmpty(Mono.just(false));
-    }
+//    private Mono<Boolean> isUserExist(String username) {
+//        return userRepository.findByUsername(username)
+//                .map(user -> true)
+//                .switchIfEmpty(Mono.just(false));
+//    }
 }
 

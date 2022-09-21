@@ -4,6 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
     <changeSet id="2" author="author" >
         <preConditions  onFail="WARN">
             <sqlCheck  expectedResult="1">select count(*) from   usr</sqlCheck>
@@ -14,6 +15,7 @@
             <column name="role" value="user"/>
         </insert>
     </changeSet>
+
     <changeSet id="3" author="author" >
         <preConditions  onFail="WARN">
             <sqlCheck  expectedResult="2">select count(*) from   usr</sqlCheck>
@@ -23,5 +25,6 @@
             <column name="password" value="123"/>
             <column name="role" value="admin"/>
         </insert>
+
     </changeSet>
 </databaseChangeLog>

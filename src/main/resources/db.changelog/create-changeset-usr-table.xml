@@ -10,18 +10,23 @@
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
     <changeSet id="1" author="author">
         <createTable tableName="usr">
+
             <column autoIncrement="true" name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+
             <column name="username" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
+
             <column name="password" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
+
             <column name="role" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
+
         </createTable>
     </changeSet>
 </databaseChangeLog>
