@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 @Slf4j
@@ -29,6 +28,11 @@ public class Controller {
     public Flux<UserDTO> getAll() {
         return userService.getAll()
                 .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @GetMapping("/users/{id}")
+    public Mono<UserDTO> getUserById(@PathVariable(value = "id") Long id) {
+        return userService.getById(id);
     }
 
     @PostMapping("/registration")
