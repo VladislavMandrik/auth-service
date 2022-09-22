@@ -25,8 +25,8 @@ public class UserService {
 
     public Flux<UserDTO> getAll() {
         return userRepository.findAll()
-                .map(userMapper::toDTO);
-//                .switchIfEmpty(Flux.empty());
+                .map(userMapper::toDTO)
+                .switchIfEmpty(Flux.empty());
     }
 
     public Mono<UserDTO> addUser(UserDTO userDTO) {
@@ -38,8 +38,6 @@ public class UserService {
     }
 
     public Mono<UserDTO> getById(Long id) {
-//        return userRepository.findById(id)
-//                .map(userMapper::toDTO);
         return userRepository.findById(id)
                 .map(userMapper::toDTO)
                 .switchIfEmpty(Mono.error(new UserAlreadyExistsException("user already exists")));
