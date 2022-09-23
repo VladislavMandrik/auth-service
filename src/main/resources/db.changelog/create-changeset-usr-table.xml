@@ -10,7 +10,6 @@
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
     <changeSet id="1" author="author">
         <createTable tableName="usr">
-
             <column autoIncrement="true" name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -23,10 +22,32 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="role" type="varchar(100)">
+            <column name="role_id" type="int">
                 <constraints nullable="false"/>
             </column>
-
         </createTable>
     </changeSet>
+
+    <changeSet id="2" author="author">
+        <createTable tableName="role">
+            <column autoIncrement="true" name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="author" id="3">
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="usr"
+                                 constraintName="fk_user_role"
+                                 deferrable="false"
+                                 initiallyDeferred="false"
+                                 referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+
 </databaseChangeLog>

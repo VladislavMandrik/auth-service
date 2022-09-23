@@ -9,6 +9,9 @@ import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import java.util.Collection;
 
 @Data
@@ -19,7 +22,9 @@ public class User implements UserDetails {
     private Long id;
     private String username;
     private String password;
-    private String role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private UserRole userRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,15 +1,20 @@
 package com.example.demo.controller;
 
+import com.example.demo.PageSupport;
 import com.example.demo.model.UserDTO;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+
+import static com.example.demo.PageSupport.DEFAULT_PAGE_SIZE;
+import static com.example.demo.PageSupport.FIRST_PAGE_NUM;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -25,8 +30,10 @@ public class Controller {
     }
 
     @GetMapping("/users")
-    public Flux<UserDTO> getAll() {
-        return userService.getAll()
+    public Mono<PageSupport<UserDTO>> getAll(@RequestParam(name = "page", defaultValue = FIRST_PAGE_NUM) int page,
+                                             @RequestParam(name = "size", defaultValue = DEFAULT_PAGE_SIZE) int size
+    ) {
+        return userService.getAll(PageRequest.of(page, size))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 

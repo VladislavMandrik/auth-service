@@ -1,5 +1,12 @@
 package com.example.demo.model;
 
-public enum UserRole {
-    ROLE_USER, ROLE_ADMIN
+import lombok.Data;
+
+import javax.persistence.Table;
+
+@Data
+@Table(name = "role")
+public class UserRole {
+    private Long id;
+    private String name;
 }
