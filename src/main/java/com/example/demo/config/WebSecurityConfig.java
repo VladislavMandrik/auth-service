@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -23,7 +24,9 @@ public class WebSecurityConfig {
                 .formLogin().and()
                 .httpBasic().disable()
                 .authorizeExchange()
-                .pathMatchers("/users", "/registration", "/hello", "/favicon.ico", "/users/{id}").permitAll()
+                .pathMatchers("/registration", "/hello", "/favicon.ico").permitAll()
+                .pathMatchers(HttpMethod.PUT,"/users/{id}").hasRole("ROLE_USER")
+                .pathMatchers(HttpMethod.GET, "/users", "/users/{id}").hasRole("ROLE_ADMIN")
                 .anyExchange().authenticated()
                 .and()
                 .build();

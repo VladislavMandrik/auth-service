@@ -37,9 +37,8 @@ public class UserService {
     }
 
     public Mono<UserDTO> addUser(UserDTO userDTO) {
-//        user.setRoleId(USER_ROLE_ID);
-//        user.setPassword(encoder.encode(user.getPassword()));
         User user = userMapper.fromDTO(userDTO);
+        user.setRole_id(1);
         return userRepository.save(user)
                 .map(userMapper::toDTO);
     }
@@ -48,6 +47,17 @@ public class UserService {
         return userRepository.findById(id)
                 .map(userMapper::toDTO)
                 .switchIfEmpty(Mono.error(new UserDoNotExistsException("User do not exists")));
+    }
+
+    public Mono<UserDTO> update(Long id, UserDTO userDTO) {
+        User user = userMapper.fromDTO(userDTO);
+        return userRepository.findById(id)
+                .map((u) -> {
+                   if (user.getUsername() != null) u.setUsername(user.getUsername());
+                   if (user.getPassword() != null) u.setPassword(user.getPassword());
+                    return u;
+                }).flatMap(userRepository::save)
+                .map(userMapper::toDTO);
 
     }
 }

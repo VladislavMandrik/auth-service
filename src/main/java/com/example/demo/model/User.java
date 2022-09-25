@@ -1,40 +1,38 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @Table("usr")
 @NoArgsConstructor
 public class User implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String password;
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
-    private UserRole userRole;
+    private Integer role_id;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        String role;
+        if (role_id == 1) {
+            role = "ROLE_USER";
+        } else {
+            role = "ROLE_ADMIN";
+        }
+        return List.of(new SimpleGrantedAuthority(role));
     }
-
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority(role.name()));
-//    }
 
     @Override
     public boolean isAccountNonExpired() {

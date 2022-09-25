@@ -11,11 +11,9 @@
     <changeSet id="1" author="author">
         <createTable tableName="usr">
             <column autoIncrement="true" name="id" type="bigint">
-                <constraints primaryKey="true" nullable="false"/>
+                <constraints primaryKey="true"/>
             </column>
-
             <column name="username" type="varchar(100)">
-                <constraints nullable="false"/>
             </column>
 
             <column name="password" type="varchar(100)">
@@ -23,15 +21,14 @@
             </column>
 
             <column name="role_id" type="int">
-                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="2" author="author">
         <createTable tableName="role">
-            <column autoIncrement="true" name="id" type="bigint">
-                <constraints primaryKey="true" nullable="false"/>
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
             </column>
 
             <column name="name" type="varchar(100)">

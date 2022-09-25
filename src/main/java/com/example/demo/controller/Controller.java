@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -33,17 +32,23 @@ public class Controller {
     public Mono<PageSupport<UserDTO>> getAll(@RequestParam(name = "page", defaultValue = FIRST_PAGE_NUM) int page,
                                              @RequestParam(name = "size", defaultValue = DEFAULT_PAGE_SIZE) int size
     ) {
-        return userService.getAll(PageRequest.of(page, size))
+        return userService.getAll(PageRequest.of(page, size)).log()
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @GetMapping("/users/{id}")
     public Mono<UserDTO> getUserById(@PathVariable(value = "id") Long id) {
-        return userService.getById(id);
+        return userService.getById(id).log();
     }
 
     @PostMapping("/registration")
     public Mono<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        return userService.addUser(userDTO);
+        return userService.addUser(userDTO).log();
+    }
+
+    @PutMapping("/users/{id}")
+    public Mono<UserDTO> updateUser(@PathVariable(value = "id") Long id,
+                                    @RequestBody UserDTO userDTO) {
+        return userService.update(id, userDTO).log();
     }
 }
