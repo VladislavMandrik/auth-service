@@ -10,7 +10,6 @@
             <sqlCheck  expectedResult="1">select count(*) from   role</sqlCheck>
         </preConditions>
         <insert tableName="role">
-            <column name="id" value="1"/>
             <column name="name" value="ROLE_USER"/>
         </insert>
     </changeSet>
@@ -20,7 +19,6 @@
             <sqlCheck  expectedResult="2">select count(*) from   role</sqlCheck>
         </preConditions>
         <insert tableName="role">
-            <column name="id" value="2"/>
             <column name="name" value="ROLE_ADMIN"/>
         </insert>
     </changeSet>
@@ -32,7 +30,7 @@
         <insert tableName="usr">
             <column name="username" value="jr"/>
             <column name="password" value="123"/>
-            <column name="role_id" value="2"/>
+            <column name="role" value="ROLE_USER"/>
         </insert>
     </changeSet>
 
@@ -43,7 +41,7 @@
         <insert tableName="usr">
             <column name="username" value="vm"/>
             <column name="password" value="123"/>
-            <column name="role_id" value="1"/>
+            <column name="role" value="ROLE_ADMIN"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

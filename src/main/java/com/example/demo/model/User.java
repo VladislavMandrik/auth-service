@@ -21,17 +21,20 @@ public class User implements UserDetails {
     private Long id;
     private String username;
     private String password;
-    private Integer role_id;
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "role_id")
+    private UserRoleE role;
+//    private UserRoleE userRoleE;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role;
-        if (role_id == 1) {
-            role = "ROLE_USER";
-        } else {
-            role = "ROLE_ADMIN";
-        }
-        return List.of(new SimpleGrantedAuthority(role));
+//        String role;
+//        if (role_id == 1) {
+//            role = "ROLE_USER";
+//        } else {
+//            role = "ROLE_ADMIN";
+//        }
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

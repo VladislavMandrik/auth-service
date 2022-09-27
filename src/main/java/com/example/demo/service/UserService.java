@@ -38,7 +38,7 @@ public class UserService {
 
     public Mono<UserDTO> addUser(UserDTO userDTO) {
         User user = userMapper.fromDTO(userDTO);
-        user.setRole_id(1);
+//        user.setRole_id(1);
         return userRepository.save(user)
                 .map(userMapper::toDTO);
     }
