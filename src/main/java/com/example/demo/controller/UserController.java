@@ -26,7 +26,7 @@ public class UserController {
 
     @PostMapping("/login")
     public Mono<ResponseEntity> login(ServerWebExchange swe) {
-        return swe.getMultipartData().flatMap(credentials ->
+        return swe.getFormData().flatMap(credentials ->
                 userService.findByUsername(String.valueOf(credentials.getFirst("username")))
                         .log()
                         .cast(User.class)
