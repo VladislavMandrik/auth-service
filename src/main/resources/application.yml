@@ -27,4 +27,8 @@ logging:
       r2dbc: DEBUG
 
 #server:
-#  port: 8080
+#  port: 8081
+
+jwt:
+  secret: secret
+  expiration: 86400

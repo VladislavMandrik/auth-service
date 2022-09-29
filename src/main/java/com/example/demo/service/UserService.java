@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.exception.UserAlreadyExistsException;
+import com.example.demo.PageSupport;
+import com.example.demo.exception.UserDoNotExistsException;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.model.UserDTO;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,16 +23,22 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public Flux<UserDTO> getAll() {
+    public Mono<PageSupport<UserDTO>> getAll(Pageable page) {
         return userRepository.findAll()
                 .map(userMapper::toDTO)
-                .switchIfEmpty(Flux.empty());
+                .collectList()
+                .map(list -> new PageSupport<>(list
+                        .stream()
+                        .skip(page.getPageNumber() * page.getPageSize())
+                        .limit(page.getPageSize())
+                        .collect(Collectors.toList()),
+                        page.getPageNumber(), page.getPageSize(), list.size()))
+                .switchIfEmpty(Mono.empty());
     }
 
     public Mono<UserDTO> addUser(UserDTO userDTO) {
-//        user.setRoleId(USER_ROLE_ID);
-//        user.setPassword(encoder.encode(user.getPassword()));
         User user = userMapper.fromDTO(userDTO);
+//        user.setRole_id(1);
         return userRepository.save(user)
                 .map(userMapper::toDTO);
     }
@@ -40,13 +46,19 @@ public class UserService {
     public Mono<UserDTO> getById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toDTO)
-                .switchIfEmpty(Mono.error(new UserAlreadyExistsException("user already exists")));
-
+                .switchIfEmpty(Mono.error(new UserDoNotExistsException("User do not exists")));
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<String> handleException(UserAlreadyExistsException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    public Mono<UserDTO> update(Long id, UserDTO userDTO) {
+        User user = userMapper.fromDTO(userDTO);
+        return userRepository.findById(id)
+                .map((u) -> {
+                   if (user.getUsername() != null) u.setUsername(user.getUsername());
+                   if (user.getPassword() != null) u.setPassword(user.getPassword());
+                    return u;
+                }).flatMap(userRepository::save)
+                .map(userMapper::toDTO);
+
     }
 }
 
