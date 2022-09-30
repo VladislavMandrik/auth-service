@@ -26,9 +26,9 @@ logging:
     org.springframework.data:
       r2dbc: DEBUG
 
-#server:
-#  port: 8081
+server:
+  port: 8081
 
 jwt:
-  secret: secret
+  secret: ThisIsSecretForJWTHS512SignatureAlgorithmThatMUSTHave64ByteLength
   expiration: 86400

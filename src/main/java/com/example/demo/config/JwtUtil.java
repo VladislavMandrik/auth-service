@@ -7,10 +7,9 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import javax.annotation.PostConstruct;
+import java.security.Key;
+import java.util.*;
 
 @Component
 public class JwtUtil {
@@ -19,40 +18,51 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private String expirationTime;
 
-    public String extractUsername(String authToken) {
-        return getClaimsFromToken(authToken)
-                .getSubject();
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public Claims getClaimsFromToken(String authToken) {
-        String key = Base64.getEncoder().encodeToString(secret.getBytes());
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(authToken)
-                .getBody();
+    public Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    public boolean validateToken(String authToken) {
-        return getClaimsFromToken(authToken)
-                .getExpiration()
-                .before(new Date());
+    public String getUsernameFromToken(String token) {
+        return getAllClaimsFromToken(token).getSubject();
+    }
+
+    public Date getExpirationDateFromToken(String token) {
+        return getAllClaimsFromToken(token).getExpiration();
+    }
+
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
     }
 
     public String generateToken(User user) {
-        HashMap<String, Object> claims = new HashMap<>();
-        claims.put("role", List.of(user.getRole()));
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRoles());
+        return doGenerateToken(claims, user.getUsername());
+    }
 
-        long expirationSeconds = Long.parseLong(expirationTime);
-        Date creationDate = new Date();
-        Date expirationDate = new Date(creationDate.getTime() + expirationSeconds * 1000);
+    private String doGenerateToken(Map<String, Object> claims, String username) {
+        Long expirationTimeLong = Long.parseLong(expirationTime); //in second
+        final Date createdDate = new Date();
+        final Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong * 1000);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.getUsername())
-                .setIssuedAt(creationDate)
+                .setSubject(username)
+                .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .signWith(key)
                 .compact();
+    }
+
+    public Boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 }

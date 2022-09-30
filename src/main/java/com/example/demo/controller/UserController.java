@@ -1,16 +1,15 @@
 package com.example.demo.controller;
 
 import com.example.demo.config.JwtUtil;
-import com.example.demo.model.User;
+import com.example.demo.model.AuthRequest;
+import com.example.demo.model.AuthResponse;
 import com.example.demo.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 @RestController
 public class UserController {
@@ -25,19 +24,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity> login(ServerWebExchange swe) {
-        return swe.getFormData().flatMap(credentials ->
-                userService.findByUsername(String.valueOf(credentials.getFirst("username")))
-                        .log()
-                        .cast(User.class)
-                        .map(userDetails -> Objects.equals(credentials.getFirst("password"),
-                                        userDetails.getPassword()
-                                )
-                                        ? ResponseEntity.ok(jwtUtil.generateToken(userDetails))
-                                        : UNAUTHORIZED
-                        )
-                        .defaultIfEmpty(UNAUTHORIZED)
-        );
+    public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest ar) {
+        return userService.findByUsername(ar.getUsername())
+                        .filter(userDetails -> ar.getPassword().equals(userDetails.getPassword()))
+                        .map(userDetails -> ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(userDetails))))
+                        .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()));
     }
 }
 

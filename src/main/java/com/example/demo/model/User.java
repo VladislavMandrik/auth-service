@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -11,10 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Table("usr")
 @NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +26,10 @@ public class User implements UserDetails {
     private String password;
 //    @ManyToMany(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "role_id")
-    private UserRoleE role;
+//    private UserRoleE role;
 //    private UserRoleE userRoleE;
+
+    private List<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -34,8 +39,9 @@ public class User implements UserDetails {
 //        } else {
 //            role = "ROLE_ADMIN";
 //        }
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return this.roles.stream().map(authority -> new SimpleGrantedAuthority(authority.name())).collect(Collectors.toList());
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
