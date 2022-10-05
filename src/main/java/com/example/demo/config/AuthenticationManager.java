@@ -1,26 +1,22 @@
 package com.example.demo.config;
 
-import com.example.demo.service.UserService;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AuthenticationManager implements ReactiveAuthenticationManager {
     private final JwtUtil jwtUtil;
-    private final UserService userService;
 
-    public AuthenticationManager(JwtUtil jwtUtil, UserService userService) {
+    public AuthenticationManager(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.userService = userService;
     }
 
     @Override
@@ -28,20 +24,16 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     public Mono<Authentication> authenticate(Authentication authentication) {
         String authToken = authentication.getCredentials().toString();
         Long id = jwtUtil.getIdFromToken(authToken);
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        userService.getById(id)
-                .map(u -> authorityList.add(new SimpleGrantedAuthority(u.getRole())));
-        System.out.println(authorityList);
         return Mono.just(jwtUtil.validateToken(authToken))
                 .filter(valid -> valid)
                 .switchIfEmpty(Mono.empty())
                 .map(valid -> {
                     Claims claims = jwtUtil.getAllClaimsFromToken(authToken);
-                    List<String> rolesMap = claims.get(null, null);
+                    List<String> rolesMap = claims.get("role", List.class);
                     return new UsernamePasswordAuthenticationToken(
                             id,
                             null,
-                            authorityList
+                            rolesMap.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
                     );
                 });
     }

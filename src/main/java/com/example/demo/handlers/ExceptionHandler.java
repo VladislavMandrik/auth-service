@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Object> handleException(UserAlreadyExistsException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorMessage> handleException(UserAlreadyExistsException e) {
+        return new ResponseEntity<>(
+                new ErrorMessage(e.getMessage(), 409, "The user already exists"), HttpStatus.CONFLICT);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(UserDoNotExistsException.class)
-    public ResponseEntity<Object> handleException(UserDoNotExistsException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorMessage> handleException(UserDoNotExistsException e) {
+        return new ResponseEntity<>(
+                new ErrorMessage(e.getMessage(), 409, "The user do not exists"), HttpStatus.CONFLICT);
     }
 }

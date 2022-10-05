@@ -9,7 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -68,17 +67,19 @@ public class UserService {
     public Mono<UserDTO> update(Long id, UserDTO userDTO) {
         User user = userMapper.fromDTO(userDTO);
         return userRepository.findById(id)
-                .map((u) -> {
+                .flatMap(u -> {
                     if (user.getUsername() != null) u.setUsername(user.getUsername());
                     if (user.getPassword() != null) u.setPassword(user.getPassword());
-                    return u;
-                }).flatMap(userRepository::save)
-                .map(userMapper::toDTO);
+                    if (user.getRole() != null) u.setRole(user.getRole());
+                    return userRepository.save(u);
+                })
+                .map(userMapper::toDTO)
+                .switchIfEmpty(Mono.error(new UserDoNotExistsException("User do not exists")));
     }
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(null, null);
+        claims.put("role", Collections.singleton(user.getRole()));
         return doGenerateToken(claims, user.getId());
     }
 
