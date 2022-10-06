@@ -61,7 +61,7 @@ public class UserService {
     public Mono<UserDTO> getById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toDTO)
-                .switchIfEmpty(Mono.error(new UserDoNotExistsException("User do not exists")));
+                .switchIfEmpty(Mono.error(new UserDoNotExistsException("User don't exists")));
     }
 
     public Mono<UserDTO> update(Long id, UserDTO userDTO) {
@@ -74,7 +74,7 @@ public class UserService {
                     return userRepository.save(u);
                 })
                 .map(userMapper::toDTO)
-                .switchIfEmpty(Mono.error(new UserDoNotExistsException("User do not exists")));
+                .switchIfEmpty(Mono.error(new UserDoNotExistsException("User don't exists")));
     }
 
     public String generateToken(User user) {
