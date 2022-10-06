@@ -1,6 +1,5 @@
 package com.example.demo.config;
 
-import com.example.demo.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;

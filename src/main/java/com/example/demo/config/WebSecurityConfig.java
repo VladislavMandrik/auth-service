@@ -53,8 +53,6 @@ public class WebSecurityConfig {
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/registration", "/hello", "/login", "/").permitAll()
-//                .pathMatchers(HttpMethod.PUT, "/users/{id}").hasRole("ADMIN")
-//                .pathMatchers(HttpMethod.GET, "/users", "/users/{id}").hasRole("ADMIN")
                 .anyExchange().authenticated()
                 .and()
                 .build();
