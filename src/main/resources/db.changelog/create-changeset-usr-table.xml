@@ -7,7 +7,7 @@
 
     <changeSet id="1" author="author">
         <createTable tableName="usr">
-            <column autoIncrement="true" name="id" type="bigint">
+            <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true"/>
             </column>
             <column name="username" type="varchar(100)">
@@ -18,14 +18,15 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="roles" type="varchar(100)">
+            <column name="role" type="varchar(100)" defaultValue="ROLE_USER">
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="2" author="author">
         <createTable tableName="roles">
-            <column autoIncrement="true" name="id" type="bigint">
+            <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true"/>
             </column>
 
@@ -35,14 +36,16 @@
         </createTable>
     </changeSet>
 
-<!--    <changeSet author="author" id="3">-->
-<!--        <addForeignKeyConstraint baseColumnNames="role_id"-->
-<!--                                 baseTableName="usr"-->
-<!--                                 constraintName="fk_user_role"-->
-<!--                                 deferrable="false"-->
-<!--                                 initiallyDeferred="false"-->
-<!--                                 referencedColumnNames="id"-->
-<!--                                 referencedTableName="role"/>-->
-<!--    </changeSet>-->
+    <changeSet id="3" author="author">
+        <createTable tableName="users_roles">
+            <column name="user_id" type="int">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_usr_users_roles" references="usr(id)"/>
+            </column>
+
+            <column name="role_id" type="int">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_roles_users_roles" references="roles(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>

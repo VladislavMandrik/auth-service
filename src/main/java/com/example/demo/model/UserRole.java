@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.persistence.Table;
 
 @Data
-@Table(name = "role")
+@Table(name = "roles")
 public class UserRole {
     private Long id;
     private String name;
