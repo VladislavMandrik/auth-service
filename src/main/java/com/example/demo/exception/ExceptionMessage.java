@@ -1,0 +1,5 @@
+package com.example.demo.exception;
+
+public enum ExceptionMessage {
+    USER_DOES_NOT_EXIST, USER_ALREADY_EXIST, YOU_CAN_NOT_CHANGE_YOUR_ROLE, YOU_CAN_CHANGE_ONLY_INFORMATION_ABOUT_YOURSELF
+}

@@ -1,8 +1,8 @@
 package com.example.demo.exception;
 
 public class UserForbiddenException extends RuntimeException {
-    public UserForbiddenException(String message) {
-        super(message);
+    public UserForbiddenException(ExceptionMessage message) {
+        super(String.valueOf(message));
     }
 }
 

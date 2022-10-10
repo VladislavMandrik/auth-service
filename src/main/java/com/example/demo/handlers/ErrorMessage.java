@@ -8,7 +8,6 @@ import lombok.Data;
 public class ErrorMessage {
 
     private String message;
-    private int code;
-    private String moreInfo;
+    private String time;
 }
 
