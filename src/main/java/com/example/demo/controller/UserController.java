@@ -30,6 +30,6 @@ public interface UserController {
 
     @PutMapping("/users/{id}")
     Mono<UserDTO> updateUser(ServerWebExchange exchange,
-                             @PathVariable(value = "id") final Long id,
-                             @RequestBody final UserDTO userDTO);
+                             @PathVariable(value = "id") Long id,
+                             @RequestBody UserDTO userDTO);
 }

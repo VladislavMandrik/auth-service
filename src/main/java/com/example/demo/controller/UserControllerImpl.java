@@ -44,8 +44,8 @@ public class UserControllerImpl implements UserController {
     }
 
     public Mono<UserDTO> updateUser(ServerWebExchange exchange,
-                                    @PathVariable(value = "id") final Long id,
-                                    @RequestBody final UserDTO userDTO) {
+                                    @PathVariable(value = "id") Long id,
+                                    @RequestBody UserDTO userDTO) {
         return userService.checkRole(exchange, id, userDTO);
     }
 }

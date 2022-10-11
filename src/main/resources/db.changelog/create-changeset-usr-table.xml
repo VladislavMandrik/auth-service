@@ -16,7 +16,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="username" type="varchar(100)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true" uniqueConstraintName="TABLE_FIELD_ix1"/>
             </column>
 
             <column name="password" type="varchar(100)">
@@ -27,6 +27,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <sql dbms="postgres">ALTER TABLE usr ENABLE ROW LEVEL SECURITY</sql>
     </changeSet>
 
     <changeSet id="2" author="author">
@@ -44,6 +45,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <sql dbms="postgres">GRANT UPDATE (password, roles) ON usr TO public</sql>
     </changeSet>
 
     <changeSet id="3" author="author">
@@ -54,11 +56,13 @@
         </preConditions>
         <createTable tableName="users_roles">
             <column name="user_id" type="int">
-                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_usr_users_roles" references="usr(id)"/>
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_usr_users_roles"
+                             references="usr(id)"/>
             </column>
 
             <column name="role_id" type="int">
-                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_roles_users_roles" references="roles(id)"/>
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_roles_users_roles"
+                             references="roles(id)"/>
             </column>
         </createTable>
     </changeSet>

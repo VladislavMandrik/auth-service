@@ -54,14 +54,8 @@ public class UserServiceImpl implements UserService {
 
     public Mono<UserDTO> update(Long id, UserDTO userDTO) {
         User user = userMapper.fromDTO(userDTO);
-        return userRepository.findById(id)
-                .flatMap(u -> {
-                    u.setPassword(user.getPassword());
-                    if (user.getRole() != null) u.setRole(user.getRole());
-                    return userRepository.save(u);
-                })
-                .map(userMapper::toDTO)
-                .switchIfEmpty(Mono.error(new UserDoesNotExistsException(ExceptionMessage.USER_DOES_NOT_EXIST)));
+        return userRepository.save(user)
+                .map(userMapper::toDTO);
     }
 
     public Mono<UserDTO> checkRole(ServerWebExchange exchange, Long id, UserDTO userDTO) {
@@ -91,8 +85,7 @@ public class UserServiceImpl implements UserService {
             log = update(id, userDTO).log();
         } else if (!Objects.equals(id, userId) && Objects.equals(roleList.get(0), "ROLE_ADMIN")) {
             log = update(id, userDTO).log();
-        }
-        else if (Objects.equals(id, userId) && Objects.equals(roleList.get(0), "ROLE_ADMIN_R")) {
+        } else if (Objects.equals(id, userId) && Objects.equals(roleList.get(0), "ROLE_ADMIN_R")) {
             log = update(id, userDTO).log();
         }
         return log;
