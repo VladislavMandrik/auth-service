@@ -3,7 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+		https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1" author="author">
         <preConditions onFail="WARN">
@@ -16,7 +16,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="username" type="varchar(100)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="TABLE_FIELD_ix1"/>
+                <constraints nullable="true" unique="true" uniqueConstraintName="TABLE_FIELD_ix1"/>
             </column>
 
             <column name="password" type="varchar(100)">
@@ -24,10 +24,9 @@
             </column>
 
             <column name="role" type="varchar(100)" defaultValue="ROLE_USER">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </createTable>
-        <sql dbms="postgres">ALTER TABLE usr ENABLE ROW LEVEL SECURITY</sql>
     </changeSet>
 
     <changeSet id="2" author="author">
@@ -45,7 +44,27 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <sql dbms="postgres">GRANT UPDATE (password, roles) ON usr TO public</sql>
+    </changeSet>
+
+    <changeSet  author="author"  id="createFunction">
+        <createProcedure>CREATE FUNCTION update_username() RETURNS trigger AS $upd_username$
+        BEGIN
+        IF
+        NEW.username IS NOT NULL THEN
+            RAISE EXCEPTION 'username cannot be not null';
+        END IF;
+
+        NEW.username := OLD.username;
+        RETURN NEW;
+
+        END;
+        $upd_username$
+        LANGUAGE plpgsql;
+
+        CREATE TRIGGER upd_username
+            BEFORE UPDATE
+            ON usr
+            FOR EACH ROW EXECUTE PROCEDURE update_username();</createProcedure>
     </changeSet>
 
     <changeSet id="3" author="author">
@@ -66,5 +85,4 @@
             </column>
         </createTable>
     </changeSet>
-
 </databaseChangeLog>
