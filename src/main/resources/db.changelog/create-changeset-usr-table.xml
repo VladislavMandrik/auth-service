@@ -3,29 +3,40 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+		https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1" author="author">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="usr"/>
+            </not>
+        </preConditions>
         <createTable tableName="usr">
-            <column autoIncrement="true" name="id" type="bigint">
+            <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true"/>
             </column>
             <column name="username" type="varchar(100)">
-                <constraints nullable="false"/>
+                <constraints nullable="true" unique="true" uniqueConstraintName="TABLE_FIELD_ix1"/>
             </column>
 
             <column name="password" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="roles" type="varchar(100)">
+            <column name="role" type="varchar(100)" defaultValue="ROLE_USER">
+                <constraints nullable="true"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet id="2" author="author">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="roles"/>
+            </not>
+        </preConditions>
         <createTable tableName="roles">
-            <column autoIncrement="true" name="id" type="bigint">
+            <column autoIncrement="true" name="id" type="int">
                 <constraints primaryKey="true"/>
             </column>
 
@@ -35,14 +46,44 @@
         </createTable>
     </changeSet>
 
-<!--    <changeSet author="author" id="3">-->
-<!--        <addForeignKeyConstraint baseColumnNames="role_id"-->
-<!--                                 baseTableName="usr"-->
-<!--                                 constraintName="fk_user_role"-->
-<!--                                 deferrable="false"-->
-<!--                                 initiallyDeferred="false"-->
-<!--                                 referencedColumnNames="id"-->
-<!--                                 referencedTableName="role"/>-->
-<!--    </changeSet>-->
+    <changeSet author="author" id="createFunction">
+        <createProcedure>
+            DROP TRIGGER IF EXISTS upd_username ON usr;
+            DROP FUNCTION IF EXISTS update_username();
 
+            CREATE OR REPLACE FUNCTION update_username() RETURNS trigger AS $$
+            BEGIN
+            IF NEW.username IS DISTINCT FROM OLD.username THEN
+            RAISE EXCEPTION 'Username cannot be changed. Current: "%", attempted: "%"',
+            OLD.username, NEW.username;
+            END IF;
+
+            RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+
+            CREATE TRIGGER upd_username
+            BEFORE UPDATE ON usr
+            FOR EACH ROW EXECUTE FUNCTION update_username();
+        </createProcedure>
+    </changeSet>
+
+    <changeSet id="3" author="author">
+        <preConditions onFail="WARN">
+            <not>
+                <tableExists tableName="users_roles"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users_roles">
+            <column name="user_id" type="int">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_usr_users_roles"
+                             references="usr(id)"/>
+            </column>
+
+            <column name="role_id" type="int">
+                <constraints primaryKey="true" nullable="false" foreignKeyName="fk_roles_users_roles"
+                             references="roles(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

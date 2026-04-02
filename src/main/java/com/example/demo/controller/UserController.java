@@ -1,34 +1,35 @@
 package com.example.demo.controller;
 
-import com.example.demo.config.JwtUtil;
-import com.example.demo.model.AuthRequest;
-import com.example.demo.model.AuthResponse;
-import com.example.demo.service.UserService;
-import org.springframework.http.HttpStatus;
+import com.example.demo.model.PageSupport;
+import com.example.demo.model.UserDTO;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-@RestController
-public class UserController {
-    private final UserService userService;
-    private final JwtUtil jwtUtil;
-    private final static ResponseEntity<Object> UNAUTHORIZED =
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+import static com.example.demo.model.PageSupport.DEFAULT_PAGE_SIZE;
+import static com.example.demo.model.PageSupport.FIRST_PAGE_NUM;
 
-    public UserController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
+public interface UserController {
 
-    @PostMapping("/login")
-    public Mono<ResponseEntity<AuthResponse>> login(@RequestBody AuthRequest ar) {
-        return userService.findByUsername(ar.getUsername())
-                        .filter(userDetails -> ar.getPassword().equals(userDetails.getPassword()))
-                        .map(userDetails -> ResponseEntity.ok(new AuthResponse(jwtUtil.generateToken(userDetails))))
-                        .switchIfEmpty(Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()));
-    }
+    @GetMapping("/hello")
+    ResponseEntity<String> getHello();
+
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    Mono<PageSupport<UserDTO>> getAll(@RequestParam(name = "page", defaultValue = FIRST_PAGE_NUM) int page,
+                                      @RequestParam(name = "size", defaultValue = DEFAULT_PAGE_SIZE) int size);
+
+    @GetMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    Mono<UserDTO> getUserById(@PathVariable(value = "id") Long id);
+
+    @PostMapping("/registration")
+    Mono<UserDTO> createUser(@RequestBody UserDTO userDTO);
+
+    @PutMapping("/users/{id}")
+    Mono<UserDTO> updateUser(ServerWebExchange exchange,
+                             @PathVariable(value = "id") Long id,
+                             @RequestBody UserDTO userDTO);
 }
-

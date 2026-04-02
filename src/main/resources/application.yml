@@ -32,3 +32,15 @@ server:
 jwt:
   secret: ThisIsSecretForJWTHS512SignatureAlgorithmThatMUSTHave64ByteLength
   expiration: 86400
+
+admin:
+  username: ${ADMIN_USERNAME}
+  password: ${ADMIN_PASSWORD}
+
+user:
+  username: ${USER_USERNAME}
+  password: ${USER_PASSWORD}
+
+user1:
+  username: ${USER1_USERNAME}
+  password: ${USER1_PASSWORD}
