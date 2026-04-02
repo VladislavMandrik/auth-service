@@ -53,9 +53,14 @@ public class UserServiceImpl implements UserService {
     }
 
     public Mono<UserDTO> update(Long id, UserDTO userDTO) {
-        User user = userMapper.fromDTO(userDTO);
-        return userRepository.save(user)
-                .map(userMapper::toDTO);
+        return userRepository.updatePasswordAndRole(id, userDTO.getPassword(), userDTO.getRole())
+                .flatMap(rowsUpdated -> {
+                    if (rowsUpdated > 0) {
+                        return userRepository.findById(id)
+                                .map(userMapper::toDTO);
+                    }
+                    return Mono.error(new UserDoesNotExistsException(ExceptionMessage.USER_DOES_NOT_EXIST));
+                });
     }
 
     public Mono<UserDTO> checkRole(ServerWebExchange exchange, Long id, UserDTO userDTO) {

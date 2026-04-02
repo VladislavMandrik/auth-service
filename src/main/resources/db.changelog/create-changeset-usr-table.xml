@@ -46,25 +46,26 @@
         </createTable>
     </changeSet>
 
-    <changeSet  author="author"  id="createFunction">
-        <createProcedure>CREATE FUNCTION update_username() RETURNS trigger AS $upd_username$
-        BEGIN
-        IF
-        NEW.username IS NOT NULL THEN
-            RAISE EXCEPTION 'username cannot be not null';
-        END IF;
+    <changeSet author="author" id="createFunction">
+        <createProcedure>
+            DROP TRIGGER IF EXISTS upd_username ON usr;
+            DROP FUNCTION IF EXISTS update_username();
 
-        NEW.username := OLD.username;
-        RETURN NEW;
+            CREATE OR REPLACE FUNCTION update_username() RETURNS trigger AS $$
+            BEGIN
+            IF NEW.username IS DISTINCT FROM OLD.username THEN
+            RAISE EXCEPTION 'Username cannot be changed. Current: "%", attempted: "%"',
+            OLD.username, NEW.username;
+            END IF;
 
-        END;
-        $upd_username$
-        LANGUAGE plpgsql;
+            RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
 
-        CREATE TRIGGER upd_username
-            BEFORE UPDATE
-            ON usr
-            FOR EACH ROW EXECUTE PROCEDURE update_username();</createProcedure>
+            CREATE TRIGGER upd_username
+            BEFORE UPDATE ON usr
+            FOR EACH ROW EXECUTE FUNCTION update_username();
+        </createProcedure>
     </changeSet>
 
     <changeSet id="3" author="author">
