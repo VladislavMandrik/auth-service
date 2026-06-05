@@ -5,4 +5,3 @@ public class UserForbiddenException extends RuntimeException {
         super(String.valueOf(message));
     }
 }
-
