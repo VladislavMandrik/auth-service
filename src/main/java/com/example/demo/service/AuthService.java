@@ -13,5 +13,4 @@ public interface AuthService {
     String generateToken(User user);
     String doGenerateToken(Map<String, Object> claims, Long id);
     Mono<ResponseEntity<AuthResponse>> userVerification(AuthRequest ar);
-
 }
